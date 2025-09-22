@@ -1,0 +1,21 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define MAX_TERRITORIOS 10
+#define MAX_MISSOES 5
+
+// Estrutura para representar um território
+typedef struct {
+    char nome[30];
+    char cor[10];
+    int tropas;
+} Territorio;
+
+// Função para exibir o mapa (simplificada)
+void exibirMapa(Territorio mapa[], int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        printf("Território: %s, Cor: %s, Tropas: %d\n", mapa[i].nome, mapa[i].cor, mapa[i].tropas);
+    }
+}
