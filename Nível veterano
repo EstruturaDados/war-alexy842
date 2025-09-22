@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+// Estrutura para armazenar as informações de cada território
+typedef struct {
+    char nome[30];
+    char cor[10];
+    int tropas;
+} Territorio;
+
+// Função para exibir os territórios
+void exibirTerritorios(Territorio* mapa, int numTerritorios) {
+    printf("\nTerritórios Cadastrados:\n");
+    for (int i = 0; i < numTerritorios; i++) {
+        printf("Território: %s | Cor: %s | Tropas: %d\n", mapa[i].nome, mapa[i].cor, mapa[i].tropas);
+    }
+}
+
+// Função para simular o ataque entre dois territórios
+void atacar(Territorio* atacante, Territorio* defensor) {
+    int dadoAtacante = rand() % 6 + 1;  // Número aleatório entre 1 e 6
+    int dadoDefensor = rand() % 6 + 1;  // Número aleatório entre 1 e 6
+
+    printf("\nAtaque! %s (Cor: %s, Tropas: %d) vs %s (Cor: %s, Tropas: %d)\n", 
+           atacante->nome, atacante->cor, atacante->tropas, defensor->nome, defensor->cor, defensor->tropas);
+    printf("Dado Atacante: %d | Dado Defensor: %d\n", dadoAtacante, dadoDefensor);
+
+    // Se o atacante vencer (dado maior)
+    if (dadoAtacante > dadoDefensor) {
+        printf("%s venceu a batalha!\n", atacante->nome);
+        // O defensor perde metade das tropas e muda de dono
+        defensor->tropas -= defensor->tropas / 2;
+        strcpy(defensor->cor, atacante->cor);  // O defensor assume a cor do atacante
+        atacante->tropas--;  // O atacante perde uma tropa
+    } else {
+        printf("%s venceu a batalha!\n", defensor->nome);
+        atacante->tropas--;  // O atacante perde uma tropa
+    }
+}
+
+// Função para liberar a memória alocada
+void liberarMemoria(Territorio* mapa) {
+    free(mapa);
+}
+
+int main() {
+    srand(time(NULL));  // Inicializa a semente para números aleatórios
+
+    int numTerritorios;
+    printf("Informe o número de territórios: ");
+    scanf("%d", &numTerritorios);
+
+    // Aloca memória para os territórios
+    Territorio* mapa = (Territorio*) calloc(numTerritorios, sizeof(Territorio));
+    if (mapa == NULL) {
+        printf("Erro na alocação de memória!\n");
+        return 1;
+    }
+
+    // Cadastro dos territórios
+    for (int i = 0; i < numTerritorios; i++) {
+        printf("\nInforme o nome do território %d: ", i + 1);
+        scanf(" %[^\n]", mapa[i].nome);  // Lê a string com espaços
+
+        printf("Informe a cor do território %d: ", i + 1);
+        scanf(" %[^\n]", mapa[i].cor);
+
+        printf("Informe o número de tropas do território %d: ", i + 1);
+        scanf("%d", &mapa[i].tropas);
+    }
+
+    // Exibe os territórios cadastrados
+    exibirTerritorios(mapa, numTerritorios);
+
+    // Simulação de ataques
+    int atacanteIdx, defensorIdx;
+    printf("\nSelecione um território atacante (índice 0 a %d): ", numTerritorios - 1);
+    scanf("%d", &atacanteIdx);
+
+    printf("Selecione um território defensor (índice 0 a %d): ", numTerritorios - 1);
+    scanf("%d", &defensorIdx);
+
+    // Validação para impedir ataque contra território da mesma cor
+    if (strcmp(mapa[atacanteIdx].cor, mapa[defensorIdx].cor) == 0) {
+        printf("Erro: você não pode atacar um território da sua própria cor!\n");
+    } else {
+        atacar(&mapa[atacanteIdx], &mapa[defensorIdx]);
+    }
+
+    // Exibe o estado após o ataque
+    exibirTerritorios(mapa, numTerritorios);
+
+    // Libera a memória alocada
+    liberarMemoria(mapa);
+
+    return 0;
+}
